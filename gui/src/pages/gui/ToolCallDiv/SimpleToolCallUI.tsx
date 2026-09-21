@@ -5,6 +5,7 @@ import {
   openContextItem,
 } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
+import { ArgsItems, ArgsToggleIcon } from "./ToolCallArgs";
 import { ToggleWithIcon } from "./ToggleWithIcon";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
@@ -30,6 +31,18 @@ export function SimpleToolCallUI({
   }, [toolCallState]);
 
   const [open, setOpen] = useState(false);
+  const [showArgs, setShowArgs] = useState(false);
+  const argsEntries = useMemo(() => {
+    const parsedArgs = toolCallState.parsedArgs;
+    if (!parsedArgs || typeof parsedArgs !== "object") return [];
+    return Object.entries(parsedArgs).map(
+      ([key, value]) =>
+        [key, typeof value === "string" ? value : JSON.stringify(value)] as [
+          string,
+          string,
+        ],
+    );
+  }, [toolCallState.parsedArgs]);
 
   const isToggleable = shownContextItems.length > 1;
   const isSingleItem = shownContextItems.length === 1;
@@ -63,10 +76,19 @@ export function SimpleToolCallUI({
           <ToolCallStatusMessage tool={tool} toolCallState={toolCallState} />
         </div>
 
-        {!!toolCallState.output?.length && (
-          <ToolTruncateHistoryIcon historyIndex={historyIndex} />
-        )}
+        <div className="flex flex-row items-center gap-1">
+          {argsEntries.length > 0 && (
+            <ArgsToggleIcon isShowing={showArgs} setIsShowing={setShowArgs} />
+          )}
+          {!!toolCallState.output?.length && (
+            <ToolTruncateHistoryIcon historyIndex={historyIndex} />
+          )}
+        </div>
       </div>
+
+      {argsEntries.length > 0 && (
+        <ArgsItems isShowing={showArgs} args={argsEntries} />
+      )}
 
       {isToggleable && (
         <div

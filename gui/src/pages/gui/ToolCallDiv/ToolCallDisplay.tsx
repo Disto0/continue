@@ -1,7 +1,8 @@
 import { Tool, ToolCallState } from "core";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { openContextItem } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
+import { ArgsItems, ArgsToggleIcon } from "./ToolCallArgs";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
 import { toolCallStateToContextItems } from "./utils";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
@@ -29,6 +30,19 @@ export function ToolCallDisplay({
 
   const isClickable = shownContextItems.length > 0;
 
+  const [showArgs, setShowArgs] = useState(false);
+  const argsEntries = useMemo(() => {
+    const parsedArgs = toolCallState.parsedArgs;
+    if (!parsedArgs || typeof parsedArgs !== "object") return [];
+    return Object.entries(parsedArgs).map(
+      ([key, value]) =>
+        [key, typeof value === "string" ? value : JSON.stringify(value)] as [
+          string,
+          string,
+        ],
+    );
+  }, [toolCallState.parsedArgs]);
+
   function handleClick() {
     if (shownContextItems.length > 0) {
       openContextItem(shownContextItems[0], ideMessenger);
@@ -52,10 +66,18 @@ export function ToolCallDisplay({
             )}
             <ToolCallStatusMessage tool={tool} toolCallState={toolCallState} />
           </div>
-          {!!toolCallState.output?.length && (
-            <ToolTruncateHistoryIcon historyIndex={historyIndex} />
-          )}
+          <div className="flex flex-row items-center gap-1">
+            {argsEntries.length > 0 && (
+              <ArgsToggleIcon isShowing={showArgs} setIsShowing={setShowArgs} />
+            )}
+            {!!toolCallState.output?.length && (
+              <ToolTruncateHistoryIcon historyIndex={historyIndex} />
+            )}
+          </div>
         </div>
+        {argsEntries.length > 0 && (
+          <ArgsItems isShowing={showArgs} args={argsEntries} />
+        )}
       </div>
       <div>{children}</div>
     </div>

@@ -58,6 +58,32 @@ We hope this codebase continues to serve as a foundation for others.
   <img src="https://contrib.rocks/image?repo=continuedev/continue&max=500" />
 </a>
 
+## Fork: Distill - MCP Tool Args & Token Count
+
+This fork adds two quality-of-life features to Continue:
+
+### 🛠️ MCP Tool Args Display
+
+When a tool call (especially MCP tools) is pending approval, the tool arguments are now displayed inline next to the tool name. For example, instead of just seeing `"SearchWeb"`, you'll see:
+
+```
+SearchWeb(query: "react hooks", url: "https://...")
+```
+
+This makes it much easier to verify what the LLM is about to do before approving.
+
+> **Note:** The underlying MCP tool calls themselves are not modified — this is purely a UI enhancement.
+
+### 📊 Token Count
+
+The context usage indicator now shows the percentage of context used (e.g., "85% of context filled") alongside the existing context bar. This gives you a clearer picture of how much of your context window is being consumed.
+
+---
+
+## Original Repository
+
+[continuedev/continue](https://github.com/continuedev/continue)
+
 ## License
 
 Apache 2.0 © 2023-2026 Continue Dev, Inc.
