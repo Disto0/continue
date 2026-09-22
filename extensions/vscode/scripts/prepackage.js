@@ -375,6 +375,18 @@ void (async () => {
     );
   });
 
+  // Copy ripgrep binary from platform-specific package BEFORE copying node_modules
+  const ripgrepPlatformPkg = `@vscode/ripgrep-${target}`;
+  const ripgrepBinarySrc = `node_modules/${ripgrepPlatformPkg}/bin/rg${exe}`;
+  const ripgrepBinaryDst = `node_modules/@vscode/ripgrep/bin/rg${exe}`;
+  if (fs.existsSync(ripgrepBinarySrc)) {
+    fs.mkdirSync(path.dirname(ripgrepBinaryDst), { recursive: true });
+    fs.copyFileSync(ripgrepBinarySrc, ripgrepBinaryDst);
+    console.log(`[info] Copied ripgrep binary from ${ripgrepPlatformPkg}`);
+  } else {
+    console.warn(`[warn] Ripgrep binary not found at ${ripgrepBinarySrc}`);
+  }
+
   // Copy node_modules for pre-built binaries
   const NODE_MODULES_TO_COPY = ["@lancedb", "@vscode/ripgrep", "workerpool"];
 
@@ -402,18 +414,6 @@ void (async () => {
         }),
     ),
   );
-
-  // Copy ripgrep binary from platform-specific package
-  const ripgrepPlatformPkg = `@vscode/ripgrep-${target}`;
-  const ripgrepBinarySrc = `node_modules/${ripgrepPlatformPkg}/bin/rg${exe}`;
-  const ripgrepBinaryDst = `node_modules/@vscode/ripgrep/bin/rg${exe}`;
-  if (fs.existsSync(ripgrepBinarySrc)) {
-    fs.mkdirSync(path.dirname(ripgrepBinaryDst), { recursive: true });
-    fs.copyFileSync(ripgrepBinarySrc, ripgrepBinaryDst);
-    console.log(`[info] Copied ripgrep binary from ${ripgrepPlatformPkg}`);
-  } else {
-    console.warn(`[warn] Ripgrep binary not found at ${ripgrepBinarySrc}`);
-  }
 
   console.log(`[info] Copied ${NODE_MODULES_TO_COPY.join(", ")}`);
 
