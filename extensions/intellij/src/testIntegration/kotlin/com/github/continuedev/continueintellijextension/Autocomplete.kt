@@ -35,7 +35,9 @@ class Autocomplete {
                         enterText("TEST_USER_MESSAGE_0")
                         space()
                     }
-                    wait(2.seconds)
+                                        // Poll for completion response instead of waiting fixed 2s (flaky on cold runner)
+                    val responseFound = wait(30.seconds) { text.contains("TEST_LLM_RESPONSE_0") }
+                    assertTrue(responseFound)
                     keyboard {
                         tab()
                     }
