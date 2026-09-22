@@ -5,7 +5,12 @@ import {
   openContextItem,
 } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
-import { ArgsItems, ArgsToggleIcon } from "./ToolCallArgs";
+import {
+  ArgsItems,
+  ArgsToggleIcon,
+  OutputItems,
+  OutputToggleIcon,
+} from "./ToolCallArgs";
 import { ToggleWithIcon } from "./ToggleWithIcon";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
@@ -44,6 +49,15 @@ export function SimpleToolCallUI({
     );
   }, [toolCallState.parsedArgs]);
 
+  const [showOutput, setShowOutput] = useState(false);
+  const outputEntries = useMemo(() => {
+    const output = toolCallState.output;
+    if (!output || output.length === 0) return [];
+    return output
+      .filter((item) => !item.hidden)
+      .map((item) => ({ name: item.name ?? "", content: item.content ?? "" }));
+  }, [toolCallState.output]);
+
   const isToggleable = shownContextItems.length > 1;
   const isSingleItem = shownContextItems.length === 1;
   const shouldShowContent = isToggleable ? open : false;
@@ -80,6 +94,12 @@ export function SimpleToolCallUI({
           {argsEntries.length > 0 && (
             <ArgsToggleIcon isShowing={showArgs} setIsShowing={setShowArgs} />
           )}
+          {outputEntries.length > 0 && (
+            <OutputToggleIcon
+              isShowing={showOutput}
+              setIsShowing={setShowOutput}
+            />
+          )}
           {!!toolCallState.output?.length && (
             <ToolTruncateHistoryIcon historyIndex={historyIndex} />
           )}
@@ -88,6 +108,10 @@ export function SimpleToolCallUI({
 
       {argsEntries.length > 0 && (
         <ArgsItems isShowing={showArgs} args={argsEntries} />
+      )}
+
+      {outputEntries.length > 0 && (
+        <OutputItems isShowing={showOutput} output={outputEntries} />
       )}
 
       {isToggleable && (

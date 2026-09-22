@@ -14,6 +14,30 @@
   <img src="media/github-readme.png" alt="Banner" />
 </p>
 
+## Fork: Distill
+
+This is a personal fork of [Continue](https://github.com/continuedev/continue), focused on **agent transparency** in the VS Code extension: seeing exactly what the model is about to do (tool arguments) and what it received back (tool output).
+
+### Features
+
+| Feature                      | Description                                                                                                                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🛠️ **MCP Tool Args Display** | A toggle icon (code brackets) next to each tool call shows the tool's arguments inline, e.g. `SearchWeb(query: "react hooks", url: "https://...")`. Makes it easy to verify what the LLM is about to do before approving. |
+| 📤 **Tool Output Display**   | A toggle icon (document) next to each tool call shows the full response received from the tool (web search results, command output, ...). Makes it easy to analyze/debug the agent's behavior after execution.            |
+| 📊 **Token Count**           | The context usage indicator now shows the percentage of context used (e.g. "85% of context filled") alongside the existing context bar.                                                                                   |
+
+> All changes are purely UI enhancements — the underlying tool calls and MCP protocol are not modified.
+
+### Changelog
+
+#### 1.4.0-preview.1
+
+Based on upstream `continuedev/continue` (package version 1.3.40).
+
+- **Added** — MCP Tool Args Display: toggle to show tool call arguments inline before approval
+- **Added** — Tool Output Display: toggle to show the full response received from a tool after execution
+- **Added** — Token Count: context usage percentage shown alongside the context bar
+
 ## What is Continue?
 
 > _Note: The `continuedev/continue` repository is no longer actively maintained and is read-only for all users._
@@ -58,27 +82,46 @@ We hope this codebase continues to serve as a foundation for others.
   <img src="https://contrib.rocks/image?repo=continuedev/continue&max=500" />
 </a>
 
-## Fork: Distill - MCP Tool Args & Token Count
+## How to build
 
-This fork adds two quality-of-life features to Continue:
+### GUI
 
-### 🛠️ MCP Tool Args Display
-
-When a tool call (especially MCP tools) is pending approval, the tool arguments are now displayed inline next to the tool name. For example, instead of just seeing `"SearchWeb"`, you'll see:
-
-```
-SearchWeb(query: "react hooks", url: "https://...")
+```powershell
+cd gui
+npm run build
 ```
 
-This makes it much easier to verify what the LLM is about to do before approving.
+### VSCode extension
 
-> **Note:** The underlying MCP tool calls themselves are not modified — this is purely a UI enhancement.
+```powershell
+cd extensions/vscode
+npm install
+npm run prepackage
+npm run esbuild
+npm run package
+```
 
-### 📊 Token Count
+## How to install
 
-The context usage indicator now shows the percentage of context used (e.g., "85% of context filled") alongside the existing context bar. This gives you a clearer picture of how much of your context window is being consumed.
+```powershell
+code --install-extension extensions/vscode/build/continue-1.4.0-preview.1.vsix
+```
 
----
+## Dev mode
+
+```powershell
+# Terminal 1 - watch GUI
+cd gui
+npm run dev
+```
+
+```powershell
+# Terminal 2 - watch extension
+cd extensions/vscode
+npm run esbuild-watch
+```
+
+Then, go to `extensions/vscode` and press F5.
 
 ## Original Repository
 

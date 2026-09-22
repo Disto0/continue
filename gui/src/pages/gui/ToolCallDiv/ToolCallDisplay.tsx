@@ -2,7 +2,12 @@ import { Tool, ToolCallState } from "core";
 import { useContext, useMemo, useState } from "react";
 import { openContextItem } from "../../../components/mainInput/belowMainInput/ContextItemsPeek";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
-import { ArgsItems, ArgsToggleIcon } from "./ToolCallArgs";
+import {
+  ArgsItems,
+  ArgsToggleIcon,
+  OutputItems,
+  OutputToggleIcon,
+} from "./ToolCallArgs";
 import { ToolCallStatusMessage } from "./ToolCallStatusMessage";
 import { toolCallStateToContextItems } from "./utils";
 import { ToolTruncateHistoryIcon } from "./ToolTruncateHistoryIcon";
@@ -43,6 +48,15 @@ export function ToolCallDisplay({
     );
   }, [toolCallState.parsedArgs]);
 
+  const [showOutput, setShowOutput] = useState(false);
+  const outputEntries = useMemo(() => {
+    const output = toolCallState.output;
+    if (!output || output.length === 0) return [];
+    return output
+      .filter((item) => !item.hidden)
+      .map((item) => ({ name: item.name ?? "", content: item.content ?? "" }));
+  }, [toolCallState.output]);
+
   function handleClick() {
     if (shownContextItems.length > 0) {
       openContextItem(shownContextItems[0], ideMessenger);
@@ -70,6 +84,12 @@ export function ToolCallDisplay({
             {argsEntries.length > 0 && (
               <ArgsToggleIcon isShowing={showArgs} setIsShowing={setShowArgs} />
             )}
+            {outputEntries.length > 0 && (
+              <OutputToggleIcon
+                isShowing={showOutput}
+                setIsShowing={setShowOutput}
+              />
+            )}
             {!!toolCallState.output?.length && (
               <ToolTruncateHistoryIcon historyIndex={historyIndex} />
             )}
@@ -77,6 +97,9 @@ export function ToolCallDisplay({
         </div>
         {argsEntries.length > 0 && (
           <ArgsItems isShowing={showArgs} args={argsEntries} />
+        )}
+        {outputEntries.length > 0 && (
+          <OutputItems isShowing={showOutput} output={outputEntries} />
         )}
       </div>
       <div>{children}</div>
