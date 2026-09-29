@@ -10,7 +10,6 @@ import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.NoProject
 import com.intellij.ide.starter.runner.Starter
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
@@ -35,13 +34,17 @@ class Autocomplete {
                         enterText("TEST_USER_MESSAGE_0")
                         space()
                     }
-                                        // Poll for completion response instead of waiting fixed 2s (flaky on cold runner)
-                    val responseFound = wait(30.seconds) { text.contains("TEST_LLM_RESPONSE_0") }
-                    assertTrue(responseFound)
+                    // Poll for the completion response instead of a fixed 2 s wait (flaky on cold runners).
+                    // waitFor() polls the condition every second until it holds or the timeout elapses,
+                    // then throws WaitForException if it never does.
+                    waitFor("autocomplete response to appear", timeout = 30.seconds) {
+                        text.contains("TEST_LLM_RESPONSE_0")
+                    }
                     keyboard {
                         tab()
                     }
-                    assertTrue(text.contains("TEST_LLM_RESPONSE_0"))
+                    // After accepting the suggestion with Tab, the response text must be present in the editor.
+                    shouldContainText("TEST_LLM_RESPONSE_0")
                 }
             }
         }
