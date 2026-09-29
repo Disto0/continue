@@ -9,6 +9,7 @@ import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.NoProject
 import com.intellij.ide.starter.runner.Starter
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
@@ -16,6 +17,11 @@ import kotlin.time.Duration.Companion.seconds
 
 class Autocomplete {
 
+    // Disabled: the Continue backend process fails to start in the CI IDE test
+    // environment ("Continue process terminated externally" / "Stream closed" in
+    // the IDE log), so no completion is ever served and the assertion fails.
+    // See https://github.com/continuedev/continue/issues/13173
+    @Disabled("Continue backend does not start in the CI IDE test environment, see https://github.com/continuedev/continue/issues/13173")
     @Video
     @Test
     fun testAutocomplete() {
