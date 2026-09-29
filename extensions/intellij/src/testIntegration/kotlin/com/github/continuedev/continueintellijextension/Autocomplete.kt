@@ -2,6 +2,7 @@ package com.github.continuedev.continueintellijextension
 
 import com.automation.remarks.junit5.Video
 import com.intellij.driver.sdk.ui.components.*
+import com.intellij.driver.sdk.wait
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
 import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.TestCase
@@ -11,6 +12,7 @@ import com.intellij.ide.starter.runner.Starter
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 class Autocomplete {
 
@@ -33,18 +35,11 @@ class Autocomplete {
                         enterText("TEST_USER_MESSAGE_0")
                         space()
                     }
-                    // Poll for the completion response instead of a fixed 2 s wait (flaky on cold runners).
-                    // The Driver SDK (Starter 243) only exposes `UiComponent.wait(Duration): T` (no lambda),
-                    // so we poll the editor text with a plain loop until the response appears or 30 s elapse.
-                    val deadline = System.currentTimeMillis() + 30_000L
-                    while (!text.contains("TEST_LLM_RESPONSE_0") && System.currentTimeMillis() < deadline) {
-                        Thread.sleep(500)
-                    }
-                    assertTrue(text.contains("TEST_LLM_RESPONSE_0"))
+                    // Wait for the completion response (30 s instead of 2 s to handle cold runners).
+                    wait(30.seconds)
                     keyboard {
                         tab()
                     }
-                    // After accepting the suggestion with Tab, the response text must be present in the editor.
                     assertTrue(text.contains("TEST_LLM_RESPONSE_0"))
                 }
             }
